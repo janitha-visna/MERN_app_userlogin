@@ -8,12 +8,11 @@ import { registerValidation } from "../helper/validate";
 import convertToBase64 from "../helper/convert";
 
 export default function Register() {
-
- const[file,setFile] = useState()
+  const [file, setFile] = useState();
 
   const formik = useFormik({
     initialValues: {
-      email: "doyo@gmailcom",
+      email: "doyo@gmail.com",
       username: "example123",
       password: "admin123",
     },
@@ -21,16 +20,16 @@ export default function Register() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-        values = await Object.assign(values, {profile : file || ' '})
+      values = await Object.assign(values, { profile: file || " " });
       console.log(values);
     },
   });
-  
+
   /**formik dosent support file upload so we need to create this handler */
-  const onUpload = async e =>{
+  const onUpload = async (e) => {
     const base64 = await convertToBase64(e.target.files[0]);
     setFile(base64);
-  }
+  };
 
   return (
     <div className="container mx-auto">
@@ -46,9 +45,18 @@ export default function Register() {
           <form className="py-1" onSubmit={formik.handleSubmit}>
             <div className="profile flex justify-center py-4">
               <label htmlFor="profile">
-                <img className={styles.profile_img} src={file || avatar} alt="avatar" />
+                <img
+                  className={styles.profile_img}
+                  src={file || avatar}
+                  alt="avatar"
+                />
               </label>
-              <input onChange={onUpload} type="file" id="profile" name="profile" />
+              <input
+                onChange={onUpload}
+                type="file"
+                id="profile"
+                name="profile"
+              />
             </div>
             <div className="textbox flex flex-col items-center gap-6">
               <input
@@ -67,14 +75,14 @@ export default function Register() {
                 placeholder="password"
               />
               <button className={styles.btn} type="submit">
-                Register 
+                Register
               </button>
             </div>
             <div className="text-center py-4">
               <span className="text-gray-500">
                 already registerd?
                 <Link className="text-red-500" to="/">
-                 login
+                  login
                 </Link>
               </span>
             </div>
