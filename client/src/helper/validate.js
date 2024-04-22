@@ -42,3 +42,16 @@ function usernameVerify(error = {}, values) {
 
   return error;
 }
+
+
+/**valitade rest password */
+
+export async function resetPasswordValidation(values){
+     const errors = passwordVerify({}, values);
+
+     if (values.password !== values.confirm_pwd){
+        errors.exist = toast.error("password not match")
+     }
+
+     return errors
+}
