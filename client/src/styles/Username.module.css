@@ -23,3 +23,7 @@
 .btn:hover {
   background-color: rgb(65, 225, 113);
 }
+
+input[type='file']{
+    display: none;
+}
