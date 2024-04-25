@@ -6,61 +6,49 @@ export async function register(req, res) {
   try {
     const { username, password, profile, email } = req.body;
 
-    // check the existing user
-    const existUsername = new Promise((resolve, reject) => {
-      UserModel.findOne({ username }, function (err, user) {
-        if (err) reject(new Error(err));
-        if (user) reject({ error: "Please use unique username" });
+    // Check for missing inputs
+    if (!username || !password || !email) {
+      return res
+        .status(400)
+        .send({ error: "Username, password, and email are required" });
+    }
 
-        resolve();
-      });
+    // Check for existing username
+    const existingUsername = await UserModel.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).send({ error: "Please use a unique username" });
+    }
+
+    // Check for existing email
+    const existingEmail = await UserModel.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).send({ error: "Please use a unique email" });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new user instance
+    const user = new UserModel({
+      username,
+      password: hashedPassword,
+      profile: profile || "",
+      email,
     });
 
-    // check for existing email
-    const existEmail = new Promise((resolve, reject) => {
-      UserModel.findOne({ email }, function (err, email) {
-        if (err) reject(new Error(err));
-        if (email) reject({ error: "Please use unique Email" });
+    // Save the user to the database
+    const savedUser = await user.save();
 
-        resolve();
-      });
-    });
-
-    Promise.all([existUsername, existEmail])
-      .then(() => {
-        if (password) {
-          bcrypt
-            .hash(password, 10)
-            .then((hashedPassword) => {
-              const user = new UserModel({
-                username,
-                password: hashedPassword,
-                profile: profile || "",
-                email,
-              });
-
-              // return save result as a response
-              user
-                .save()
-                .then((result) =>
-                  res.status(201).send({ msg: "User Register Successfully" })
-                )
-                .catch((error) => res.status(500).send({ error }));
-            })
-            .catch((error) => {
-              return res.status(500).send({
-                error: "Enable to hashed password",
-              });
-            });
-        }
-      })
-      .catch((error) => {
-        return res.status(500).send({ error });
-      });
+    // Send success response
+    res
+      .status(201)
+      .send({ msg: "User registered successfully", user: savedUser });
   } catch (error) {
-    return res.status(500).send(error);
+    console.error("Error in register:", error);
+    res.status(500).send({ error: "Internal Server Error" });
   }
 }
+
 
 
 export async function login(req, res) {

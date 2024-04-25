@@ -1,13 +1,25 @@
-import mongoose from "mongoose";
-import { UserSchema } from "./UserSchema"; // Import your UserSchema
 
-// Define your model using the schema
-const UserModel = mongoose.model("User", UserSchema);
+let p = new Promise((resolve,reject) => {
+    let a = 1+1
+    if(a == 2){
+        resolve ('sucess')
+    }else{
+        reject('failed')
+    }
+})
 
-// Check if the model is registered with Mongoose
-const allModelNames = mongoose.connection.modelNames();
-if (allModelNames.includes("User")) {
-  console.log("User model is registered with Mongoose.");
-} else {
-  console.log("User model is not registered with Mongoose.");
-}
+p.then((message) => {
+console.log('this is the the ' + message)
+}).catch((message) => {
+     console.log('this is the cathc' + message)
+})
+
+
+let c = new Promise((resolve, reject) => {
+  let c = 1 + 2;
+  if (c == 2) {
+    resolve("sucess");
+  } else {
+    reject("failed");
+  }
+});
