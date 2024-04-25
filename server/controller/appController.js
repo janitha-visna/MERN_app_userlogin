@@ -1,6 +1,23 @@
 import UserModel from "../model/User.model.js";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import ENV from "../config.js";
 
+/** middleware for verify user */
+
+export async function verifyUser(req, res, next) {
+  try {
+    const { username } = req.method == "GET" ? req.query : req.body;
+
+    //check the user existance
+
+    let exist = await UserModel.findOne({ username });
+    if (!exist) return res.status(404).send({ error: "can't find the user!" });
+    next();
+  } catch (error) {
+    return res.status(404).send({ error: "Authentication errror" });
+  }
+}
 
 export async function register(req, res) {
   try {
@@ -49,10 +66,38 @@ export async function register(req, res) {
   }
 }
 
-
-
 export async function login(req, res) {
-  res.json("login route");
+  const { username, password } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ username });
+    if (!user) {
+      return res.status(404).send({ error: "Username not found" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      return res.status(400).send({ error: "Password does not match" });
+    }
+
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        username: user.username,
+      },
+      ENV.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    return res.status(200).send({
+      message: "Login successful!",
+      username: user.username,
+      token,
+    });
+  } catch (error) {
+    console.error("Error during login:", error);
+    return res.status(500).send({ error: "Internal server error" });
+  }
 }
 
 export async function getUser(req, res) {
