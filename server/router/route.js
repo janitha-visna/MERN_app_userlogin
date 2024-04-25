@@ -12,7 +12,7 @@ router.route("/login").post(controller.verifyUser,controller.login) //login in a
 
 /**GET method */
 
-router.route("user/:username").get(controller.getUser);
+router.route("/user/:username").get(controller.getUser);
 router.route("/generateOTP").get(controller.generateOTP);
 router.route("/verifyOTP").get(controller.verifyOTP);
 router.route("/createResetSession").get(controller.createResetSession);
