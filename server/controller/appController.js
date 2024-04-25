@@ -115,7 +115,7 @@ export async function getUser(req, res) {
     /**remove password from the user */
     //mongoose return unnessary data with object so convert it into json
 
-    const {password,...rest} = Object.assign({} ,user.toJSON());
+    const { password, ...rest } = Object.assign({}, user.toJSON());
 
     return res.status(200).send(rest);
   } catch (error) {
@@ -125,7 +125,26 @@ export async function getUser(req, res) {
 }
 
 export async function updateuser(req, res) {
-  res.json("updateuser route");
+  try {
+    const id = req.query.id;
+
+    if (!id) {
+      return res.status(400).send({ error: "Invalid or missing user ID" });
+    }
+
+    const body = req.body;
+
+    const result = await UserModel.updateOne({ _id: id }, body);
+
+    if (result.nModified === 0) {
+      return res.status(404).send({ error: "User not found" });
+    }
+
+    return res.status(200).send({ msg: "Record updated" });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return res.status(500).send({ error: "Internal server error" });
+  }
 }
 
 export async function generateOTP(req, res) {
