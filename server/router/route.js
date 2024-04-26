@@ -3,6 +3,7 @@ const router = Router(); // Create a new instance of the Router class
 
 /**import all contrllers */
 import * as controller from '../controller/appController.js'
+import Auth from '../middleware/auth.js'
 
 /**POST method */
 router.route("/register").post(controller.register);
@@ -18,7 +19,7 @@ router.route("/verifyOTP").get(controller.verifyOTP);
 router.route("/createResetSession").get(controller.createResetSession);
 
 /**PUT method */
-router.route("/updateuser").put(controller.updateuser);
+router.route("/updateuser").put(Auth,controller.updateuser);
 router.route("/resetPassword").put(controller.resetPassword);
 
 export default router;

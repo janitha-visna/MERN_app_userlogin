@@ -124,17 +124,19 @@ export async function getUser(req, res) {
   }
 }
 
+
+
 export async function updateuser(req, res) {
   try {
-    const id = req.query.id;
+    const { userId } = req.user;
 
-    if (!id) {
+    if (!userId) {
       return res.status(400).send({ error: "Invalid or missing user ID" });
     }
 
     const body = req.body;
 
-    const result = await UserModel.updateOne({ _id: id }, body);
+    const result = await UserModel.updateOne({ _id: userId }, body);
 
     if (result.nModified === 0) {
       return res.status(404).send({ error: "User not found" });
@@ -146,6 +148,7 @@ export async function updateuser(req, res) {
     return res.status(500).send({ error: "Internal server error" });
   }
 }
+
 
 export async function generateOTP(req, res) {
   res.json("generateOTP route");
