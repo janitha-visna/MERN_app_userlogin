@@ -67,25 +67,39 @@ export async function resetPasswordValidation(values) {
 
 /**validate register form */
 export async function registerValidation(values) {
-  const errors = usernameVerify({}, values);
-  passwordVerify(errors, values);
-  emailVerify(errors, values);
+  const errors = {};
+
+  // Validate username
+  const usernameErrors = usernameVerify(values);
+  Object.assign(errors, usernameErrors);
+
+  // Validate password
+  const passwordErrors = passwordVerify({}, values);
+  Object.assign(errors, passwordErrors);
+
+  // Validate email
+  const emailErrors = emailVerify(values);
+  Object.assign(errors, emailErrors);
 
   return errors;
 }
 
+
 /**valiatade email */
 
-function emailVerify(error = {}, values) {
+function emailVerify(values) {
+  const errors = {};
+
   if (!values.email) {
-    error.email = toast.error("email required..!");
-  } else if (values.email.includes("")) {
-    error.email = toast.error("wrong email");
-  } else if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/i.test(values.email)) {
-    error.email = toast.error("invalid email address");
+    errors.email = "Email is required.";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
+    errors.email = "Invalid email address.";
   }
-  return error;
+
+  return errors;
 }
+
+
 
 /** validate profile page */
 
