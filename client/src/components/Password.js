@@ -40,7 +40,7 @@ export default function Password() {
     },
   });
 
-  if(isLoading) return <h1 className='text-2xl font-bold'>is loading</h1>;
+  //if(isLoading) return <h1 className='text-2xl font-bold'>is loading</h1>;
   if(serverError) return <h1 className='text-xl text-red-500'>{serverError.message}</h1>
 
   return (
