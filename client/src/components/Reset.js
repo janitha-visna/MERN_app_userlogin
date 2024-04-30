@@ -1,12 +1,22 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import avatar from "../assets/avatar.png";
 import styles from "../styles/Username.module.css";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
 import { resetPasswordValidation } from "../helper/validate";
+import { resetPassword } from "../helper/helper";
+import { useAuthStore } from "../store/store";
+import { useNavigate,Navigate } from "react-router-dom";
+import useFetch from "../hooks/fetch.hook";
 
 export default function Reset() {
+  const { username } = useAuthStore((state) => state.auth);
+  const navigate = useNavigate();
+  const [{ isLoading, apiData, status, serverError }] = useFetch("createResetSession");
+
+  
+
   const formik = useFormik({
     initialValues: {
       password: " ",
@@ -17,8 +27,25 @@ export default function Reset() {
     validateOnChange: false,
     onSubmit: async (values) => {
       console.log(values);
+
+      let resetPromise = resetPassword({ username, password: values.password });
+
+      toast.promise(resetPromise, {
+        loading: "updating..",
+        success: <b>reset successfuly</b>,
+        error: <b>could not reset</b>,
+      });
+
+      resetPromise.then(function () {
+        navigate("/password");
+      });
     },
   });
+
+  if (isLoading) return <h1 className="text-2xl font-bold">is loading</h1>;
+  if (serverError)
+    return <h1 className="text-xl text-red-500">{serverError.message}</h1>; 
+    if(status && status !== 201) return <Navigate to={'/password'} replace={true}></Navigate>
 
   return (
     <div className="container mx-auto">
@@ -50,7 +77,6 @@ export default function Reset() {
                 Reset
               </button>
             </div>
-            
           </form>
         </div>
       </div>
