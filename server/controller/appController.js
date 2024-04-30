@@ -172,20 +172,18 @@ export async function verifyOTP(req, res) {
 /**get:http://localhost:8000/api/createResetSession */
 export async function createResetSession(req, res) {
   if (req.app.locals.resetSession) {
-    req.app.locals.resetSession = false; // allow access to this route only once
-    return res.status(201).send({ msg: "access granted1!" });
+    return res.status(201).send({ flag: req.app.locals.resetSession });
   }
   return res.status(440).send({ error: "session expired" });
 }
 
 /**put :http://localhost:8000/api/resetPassord */
 
-
 export async function resetPassword(req, res) {
   try {
     if (!req.app.locals.resetSession)
-    return res.status(404).send({error : "session expired"});
-    
+      return res.status(404).send({ error: "session expired" });
+
     const { username, password } = req.body;
     const user = await UserModel.findOne({ username });
 
@@ -206,4 +204,3 @@ export async function resetPassword(req, res) {
     return res.status(500).send({ error: "Internal server error" });
   }
 }
-
